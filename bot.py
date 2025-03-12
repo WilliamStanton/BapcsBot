@@ -78,9 +78,11 @@ class Client(discord.Client):
                 if feed_data != "":
                     for guild in self.guilds:
                         # find channel id for guild
-                        channel_id = self.cursor.execute("SELECT channel_id FROM channels WHERE server_id=?", (guild.id,)).fetchone()
+                        result = self.cursor.execute("SELECT channel_id FROM channels WHERE server_id=?", (guild.id,)).fetchone()
                         # create a guild channel if doesn't exist yet and place it in the db
-                        if channel_id is None:
+                        if result:
+                            channel_id = result[0]
+                        else:
                             channel_id = await self.on_guild_join(guild)
 
                         await self.send_message(feed_data, channel_id) # send message
